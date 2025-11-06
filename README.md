@@ -2,8 +2,8 @@
 
 A cloud-native microservice for enriching payment/transaction data with merchant categorization, geolocation, and data normalization. Built with Java, Spring Boot, AWS services, and designed for high throughput and low latency.
 
-[![CI/CD Pipeline](https://github.com/yourusername/payment-enrichment-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/yourusername/payment-enrichment-service/actions)
-[![codecov](https://codecov.io/gh/yourusername/payment-enrichment-service/branch/main/graph/badge.svg)](https://codecov.io/gh/yourusername/payment-enrichment-service)
+[![CI/CD Pipeline](https://github.com/moonbogi/payment-enrichment-service/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/moonbogi/payment-enrichment-service/actions)
+[![codecov](https://codecov.io/gh/moonbogi/payment-enrichment-service/branch/main/graph/badge.svg)](https://codecov.io/gh/moonbogi/payment-enrichment-service)
 
 ## 📋 Table of Contents
 
@@ -531,9 +531,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**Your Name**
-- GitHub: [@yourusername](https://github.com/yourusername)
+**Leo Moon**
+- GitHub: [@moonbogi](https://github.com/moonbogi)
 - LinkedIn: [Your Profile](https://linkedin.com/in/yourprofile)
+- Email: hyungjibi@gmail.com
 
 ## 🙏 Acknowledgments
 
