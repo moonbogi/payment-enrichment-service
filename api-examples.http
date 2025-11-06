@@ -1,0 +1,96 @@
+# Sample API Requests for Payment Enrichment Service
+
+## Enrich Single Transaction
+
+POST http://localhost:8080/api/v1/enrichment/transactions
+Content-Type: application/json
+
+{
+  "transactionId": "txn-demo-001",
+  "merchantId": "merch-12345",
+  "merchantName": "Starbucks Coffee",
+  "amount": 5.75,
+  "currency": "USD",
+  "country": "Canada",
+  "city": "Vancouver",
+  "latitude": 49.2827,
+  "longitude": -123.1207
+}
+
+###
+
+## Enrich Transaction Async
+
+POST http://localhost:8080/api/v1/enrichment/transactions/async
+Content-Type: application/json
+
+{
+  "transactionId": "txn-async-001",
+  "merchantId": "merch-67890",
+  "merchantName": "Amazon.com",
+  "amount": 49.99,
+  "currency": "USD",
+  "country": "United States",
+  "city": "New York"
+}
+
+###
+
+## Batch Enrich Transactions
+
+POST http://localhost:8080/api/v1/enrichment/transactions/batch
+Content-Type: application/json
+
+[
+  {
+    "transactionId": "txn-batch-001",
+    "merchantId": "merch-111",
+    "merchantName": "Shell Gas Station",
+    "amount": 45.00,
+    "currency": "CAD",
+    "country": "Canada",
+    "city": "Vancouver"
+  },
+  {
+    "transactionId": "txn-batch-002",
+    "merchantId": "merch-222",
+    "merchantName": "Hilton Hotel",
+    "amount": 250.00,
+    "currency": "USD",
+    "country": "United States",
+    "city": "New York"
+  },
+  {
+    "transactionId": "txn-batch-003",
+    "merchantId": "merch-333",
+    "merchantName": "Bitcoin Exchange",
+    "amount": 1000.00,
+    "currency": "USD",
+    "country": "United Kingdom",
+    "city": "London"
+  }
+]
+
+###
+
+## Get Enrichment Status
+
+GET http://localhost:8080/api/v1/enrichment/transactions/txn-demo-001/status
+
+###
+
+## Health Check
+
+GET http://localhost:8080/actuator/health
+
+###
+
+## Prometheus Metrics
+
+GET http://localhost:8080/actuator/prometheus
+
+###
+
+## Application Info
+
+GET http://localhost:8080/actuator/info
