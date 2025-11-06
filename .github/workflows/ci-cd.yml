@@ -1,0 +1,149 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  JAVA_VERSION: '17'
+  MAVEN_OPTS: -Xmx3072m
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      
+      localstack:
+        image: localstack/localstack:latest
+        ports:
+          - 4566:4566
+        env:
+          SERVICES: dynamodb,s3
+        options: >-
+          --health-cmd "awslocal dynamodb list-tables"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Build with Maven
+      run: mvn clean install -DskipTests
+    
+    - name: Run unit tests
+      run: mvn test
+    
+    - name: Run integration tests
+      run: mvn verify -Dspring.profiles.active=test
+      env:
+        SPRING_REDIS_HOST: localhost
+        DYNAMODB_ENDPOINT: http://localhost:4566
+        S3_ENDPOINT: http://localhost:4566
+    
+    - name: Generate test coverage report
+      run: mvn jacoco:report
+    
+    - name: Upload test coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        files: ./enrichment-api/target/site/jacoco/jacoco.xml,./enrichment-core/target/site/jacoco/jacoco.xml
+        flags: unittests
+        name: codecov-umbrella
+    
+    - name: Build Docker image
+      run: docker build -t payment-enrichment-service:${{ github.sha }} .
+    
+    - name: Save Docker image
+      run: docker save payment-enrichment-service:${{ github.sha }} > payment-enrichment-service.tar
+    
+    - name: Upload Docker image artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: docker-image
+        path: payment-enrichment-service.tar
+        retention-days: 1
+
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Set up JDK ${{ env.JAVA_VERSION }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ env.JAVA_VERSION }}
+        distribution: 'temurin'
+        cache: maven
+    
+    - name: Run code quality checks
+      run: mvn checkstyle:check pmd:check spotbugs:check
+      continue-on-error: true
+    
+    - name: Run dependency check
+      run: mvn dependency-check:check
+      continue-on-error: true
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  deploy-staging:
+    needs: [build-and-test, code-quality]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment..."
+        # Add your deployment commands here
+
+  deploy-production:
+    needs: [build-and-test, code-quality, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production environment..."
+        # Add your deployment commands here

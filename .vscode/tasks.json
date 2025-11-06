@@ -1,0 +1,136 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Project",
+      "type": "shell",
+      "command": "./mvnw clean install -DskipTests",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run Application (Local)",
+      "type": "shell",
+      "command": "./mvnw spring-boot:run -pl enrichment-api -Dspring-boot.run.profiles=local",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^.*$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^.*Starting EnrichmentServiceApplication.*$",
+          "endsPattern": "^.*Started EnrichmentServiceApplication in.*$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Run Tests",
+      "type": "shell",
+      "command": "./mvnw test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Run with Coverage",
+      "type": "shell",
+      "command": "./mvnw clean verify jacoco:report",
+      "group": "none",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Start Docker Services",
+      "type": "shell",
+      "command": "docker-compose up -d redis localstack",
+      "group": "none",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Start All Services (Docker Compose)",
+      "type": "shell",
+      "command": "docker-compose up --build",
+      "group": "none",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "Stop Docker Services",
+      "type": "shell",
+      "command": "docker-compose down",
+      "group": "none",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Clean Project",
+      "type": "shell",
+      "command": "./mvnw clean",
+      "group": "none",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Package Application",
+      "type": "shell",
+      "command": "./mvnw clean package -DskipTests",
+      "group": "none",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Build Docker Image",
+      "type": "shell",
+      "command": "docker build -t payment-enrichment-service:latest .",
+      "group": "none",
+      "dependsOn": ["Package Application"],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    }
+  ]
+}

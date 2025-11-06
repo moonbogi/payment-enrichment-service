@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'payment-enrichment-service'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['payment-enrichment-service:8080']
